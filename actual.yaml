@@ -1,0 +1,1164 @@
+---
+properties: []
+components:
+  - t2store_azurerm_resource_group:
+      type: "azurerm_resource_group"
+      description: null
+      properties:
+        - name: "t2store-resources"
+        - location: "West Europe"
+      operations: []
+      artifacts: []
+  - t2store_kubernetes_namespace:
+      type: "kubernetes_namespace"
+      description: null
+      properties:
+        - metadata.name: "t2store"
+      operations: []
+      artifacts: []
+  - t2store_azurerm_kubernetes_cluster_node:
+      type: "physical_node"
+      description: null
+      properties:
+        - cpu_count: 4
+        - ram_GiB: 16
+        - storage_GiB: 32
+      operations: []
+      artifacts: []
+  - t2store_azurerm_kubernetes_cluster_operating-system:
+      type: "operating_system"
+      description: null
+      properties:
+        - name: "Ubuntu"
+        - version: "18.04"
+        - os_family: "Linux"
+      operations: []
+      artifacts: []
+  - t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "container_runtime"
+      description: null
+      properties:
+        - name: "containerd"
+      operations: []
+      artifacts: []
+  - mongo-cart-mongodb:
+      type: "mongo-cart-mongodb-type"
+      description: null
+      properties:
+        - mongodb: 27017
+        - MONGODB_DISABLE_SYSTEM_LOG: "no"
+        - ALLOW_EMPTY_PASSWORD: "yes"
+        - BITNAMI_DEBUG: "false"
+        - MONGODB_PORT_NUMBER: "27017"
+        - MONGODB_SYSTEM_LOG_VERBOSITY: "0"
+        - MONGODB_ENABLE_IPV6: "no"
+        - MONGODB_DISABLE_JAVASCRIPT: "no"
+        - MONGODB_ENABLE_JOURNAL: "yes"
+        - MONGODB_ENABLE_DIRECTORY_PER_DB: "no"
+        - mongodb: "27017:mongodb"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "docker.io/bitnami/mongodb:7.0.4-debian-11-r2"
+            fileURI: "-"
+  - mongo-order-mongodb:
+      type: "mongo-order-mongodb-type"
+      description: null
+      properties:
+        - mongodb: 27017
+        - MONGODB_DISABLE_SYSTEM_LOG: "no"
+        - ALLOW_EMPTY_PASSWORD: "yes"
+        - BITNAMI_DEBUG: "false"
+        - MONGODB_PORT_NUMBER: "27017"
+        - MONGODB_SYSTEM_LOG_VERBOSITY: "0"
+        - MONGODB_ENABLE_IPV6: "no"
+        - MONGODB_DISABLE_JAVASCRIPT: "no"
+        - MONGODB_ENABLE_JOURNAL: "yes"
+        - MONGODB_ENABLE_DIRECTORY_PER_DB: "no"
+        - mongodb: "27017:mongodb"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "docker.io/bitnami/mongodb:7.0.4-debian-11-r2"
+            fileURI: "-"
+  - kafka-controller:
+      type: "kafka-controller-type"
+      description: null
+      properties:
+        - client: 9092
+        - controller: 9093
+        - interbroker: 9094
+        - KAFKA_INTER_BROKER_USER: "inter_broker_user"
+        - KAFKA_CONTROLLER_USER: "controller_user"
+        - BITNAMI_DEBUG: "false"
+        - KAFKA_CLIENT_USERS: "user1"
+        - KAFKA_KRAFT_BOOTSTRAP_SCRAM_USERS: "true"
+        - KAFKA_HEAP_OPTS: "-Xmx1024m -Xms1024m"
+        - tcp-controller: "9093:controller"
+        - tcp-interbroker: "9094:interbroker"
+        - tcp-client: "9092:client"
+        - tcp-client: "9092:client"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "docker.io/bitnami/kafka:3.6.1-debian-11-r0"
+            fileURI: "-"
+  - cdcservice:
+      type: "cdcservice-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - EVENTUATELOCAL_CDC_READER_NAME: "PostgresPollingReader"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+        - SPRING_PROFILES_ACTIVE: "EventuatePolling"
+        - SPRING_DATASOURCE_PASSWORD: "eventuate"
+        - SPRING_DATASOURCE_TEST_ON_BORROW: "true"
+        - SPRING_DATASOURCE_VALIDATION_QUERY: "SELECT 1"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - EVENTUATE_OUTBOX_ID: "1"
+        - JAVA_OPTS: "-Xmx64m"
+        - SPRING_DATASOURCE_USERNAME: "eventuate"
+        - "8099": "8099:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "eventuateio/eventuate-cdc-service:0.12.0.RELEASE"
+            fileURI: "-"
+  - uibackend:
+      type: "uibackend-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - T2_ORCHESTRATOR_URL: "http://orchestrator-cs/order/"
+        - T2_INVENTORY_URL: "http://inventory-cs/inventory/"
+        - T2_RESERVATION_ENDPOINT: "reservation"
+        - JAEGER_HOST: "localhost #todo"
+        - T2_CART_URL: "http://cart-cs/cart/"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/uibackend:main"
+            fileURI: "-"
+  - cart:
+      type: "cart-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - T2_CART_TTL: "0"
+        - JAEGER_HOST: "localhost #todo"
+        - MONGO_HOST: "mongo-cart-mongodb"
+        - T2_CART_TASKRATE: "0"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/cart:main"
+            fileURI: "-"
+  - creditinstitute:
+      type: "creditinstitute-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - "80": "80:8080"
+        - http: "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/creditinstitute:main"
+            fileURI: "-"
+  - ui:
+      type: "ui-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - T2_UIBACKEND_URL: "http://uibackend-cs/"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/ui:main"
+            fileURI: "-"
+  - orchestrator:
+      type: "orchestrator-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - JAEGER_SERVICE_NAME: "orchestrator"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD: "eventuate"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - JAEGER_ENABLE: "FALSE"
+        - SPRING_DATASOURCE_USERNAME: "eventuate"
+        - JAEGER_HOST: "simplest-agent #todo"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/orchestrator:main"
+            fileURI: "-"
+  - payment:
+      type: "payment-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - T2_PAYMENT_PROVIDER_DUMMY_URL: "http://creditinstitute-cs/pay"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD: "eventuate"
+        - JAEGER_SERVICE_NAME: "payment"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - JAEGER_ENABLE: "FALSE"
+        - SPRING_DATASOURCE_USERNAME: "eventuate"
+        - JAEGER_HOST: "simplest-agent #todo"
+        - T2_PAYMENT_PROVIDER_TIMEOUT: "5"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/payment:main"
+            fileURI: "-"
+  - postgres-inventory:
+      type: "postgres-inventory-type"
+      description: null
+      properties:
+        - container_port: 5432
+        - POSTGRES_DB: "inventory"
+        - POSTGRES_PASSWORD: "inventory"
+        - POSTGRES_USER: "inventory"
+        - "5432": "5432:5432"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "postgres:14.1"
+            fileURI: "-"
+  - postgres-orchestrator:
+      type: "postgres-orchestrator-type"
+      description: null
+      properties:
+        - container_port: 5432
+        - POSTGRES_PASSWORD: "eventuate"
+        - POSTGRES_USER: "eventuate"
+        - USE_DB_ID: "true"
+        - "5432": "5432:5432"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "eventuateio/eventuate-tram-sagas-postgres:0.18.0.RELEASE"
+            fileURI: "-"
+  - order:
+      type: "order-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - MONGO_HOST: "mongo-order-mongodb"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD: "eventuate"
+        - JAEGER_SERVICE_NAME: "order"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - JAEGER_ENABLE: "FALSE"
+        - SPRING_DATASOURCE_USERNAME: "eventuate"
+        - JAEGER_HOST: "simplest-agent #todo"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/order:main"
+            fileURI: "-"
+  - inventory:
+      type: "inventory-type"
+      description: null
+      properties:
+        - container_port: 8080
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+        - INVENTORY_SIZE: "25"
+        - JAEGER_HOST: "simplest-agent #todo"
+        - JAEGER_SERVICE_NAME: "inventory"
+        - SPRING_PROFILE_ACTIVE: "saga"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD: "inventory"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-inventory:5432/inventory"
+        - JAEGER_ENABLE: "FALSE"
+        - T2_INVENTORY_TTL: "0"
+        - T2_INVENTORY_TASKRATE: "0"
+        - SPRING_DATASOURCE_USERNAME: "inventory"
+        - "80": "80:8080"
+      operations: []
+      artifacts:
+        - docker_image:
+            name: "t2project/inventory:main"
+            fileURI: "-"
+relations:
+  - t2store_azurerm_kubernetes_cluster_operating-system_HostedOn_t2store_azurerm_kubernetes_cluster_node:
+      type: "HostedOn"
+      description: null
+      source: "t2store_azurerm_kubernetes_cluster_operating-system"
+      target: "t2store_azurerm_kubernetes_cluster_node"
+      properties: []
+      operations: []
+  - t2store_azurerm_kubernetes_cluster_container-runtime_HostedOn_t2store_azurerm_kubernetes_cluster_operating-system:
+      type: "HostedOn"
+      description: null
+      source: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      target: "t2store_azurerm_kubernetes_cluster_operating-system"
+      properties: []
+      operations: []
+  - mongo-cart-mongodb_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "mongo-cart-mongodb"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - mongo-order-mongodb_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "mongo-order-mongodb"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - kafka-controller_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "kafka-controller"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - uibackend_ConnectsTo_cart:
+      type: "ConnectsTo"
+      description: null
+      source: "uibackend"
+      target: "cart"
+      properties: []
+      operations: []
+  - order_ConnectsTo_postgres-orchestrator:
+      type: "ConnectsTo"
+      description: null
+      source: "order"
+      target: "postgres-orchestrator"
+      properties: []
+      operations: []
+  - uibackend_ConnectsTo_orchestrator:
+      type: "ConnectsTo"
+      description: null
+      source: "uibackend"
+      target: "orchestrator"
+      properties: []
+      operations: []
+  - orchestrator_ConnectsTo_postgres-orchestrator:
+      type: "ConnectsTo"
+      description: null
+      source: "orchestrator"
+      target: "postgres-orchestrator"
+      properties: []
+      operations: []
+  - uibackend_ConnectsTo_inventory:
+      type: "ConnectsTo"
+      description: null
+      source: "uibackend"
+      target: "inventory"
+      properties: []
+      operations: []
+  - payment_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "payment"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - inventory_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "inventory"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - order_ConnectsTo_mongo-order-mongodb:
+      type: "ConnectsTo"
+      description: null
+      source: "order"
+      target: "mongo-order-mongodb"
+      properties: []
+      operations: []
+  - orchestrator_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "orchestrator"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - ui_ConnectsTo_uibackend:
+      type: "ConnectsTo"
+      description: null
+      source: "ui"
+      target: "uibackend"
+      properties: []
+      operations: []
+  - cdcservice_ConnectsTo_postgres-orchestrator:
+      type: "ConnectsTo"
+      description: null
+      source: "cdcservice"
+      target: "postgres-orchestrator"
+      properties: []
+      operations: []
+  - creditinstitute_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "creditinstitute"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - ui_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "ui"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - inventory_ConnectsTo_postgres-inventory:
+      type: "ConnectsTo"
+      description: null
+      source: "inventory"
+      target: "postgres-inventory"
+      properties: []
+      operations: []
+  - cart_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "cart"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - cdcservice_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "cdcservice"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - payment_ConnectsTo_creditinstitute:
+      type: "ConnectsTo"
+      description: null
+      source: "payment"
+      target: "creditinstitute"
+      properties: []
+      operations: []
+  - postgres-inventory_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "postgres-inventory"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - payment_ConnectsTo_postgres-orchestrator:
+      type: "ConnectsTo"
+      description: null
+      source: "payment"
+      target: "postgres-orchestrator"
+      properties: []
+      operations: []
+  - cart_ConnectsTo_mongo-cart-mongodb:
+      type: "ConnectsTo"
+      description: null
+      source: "cart"
+      target: "mongo-cart-mongodb"
+      properties: []
+      operations: []
+  - order_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "order"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - postgres-orchestrator_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "postgres-orchestrator"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+  - uibackend_HostedOn_t2store_azurerm_kubernetes_cluster_container-runtime:
+      type: "HostedOn"
+      description: null
+      source: "uibackend"
+      target: "t2store_azurerm_kubernetes_cluster_container-runtime"
+      properties: []
+      operations: []
+component_types:
+  - BaseType:
+      extends: "-"
+      description: "This is the base type"
+      properties: []
+      operations: []
+  - azurerm_resource_group:
+      extends: "-"
+      description: null
+      properties:
+        - name:
+            type: "STRING"
+            required: false
+            default_value: "t2store-resources"
+        - location:
+            type: "STRING"
+            required: false
+            default_value: "West Europe"
+      operations: []
+  - kubernetes_namespace:
+      extends: "-"
+      description: null
+      properties:
+        - metadata.name:
+            type: "STRING"
+            required: false
+            default_value: "t2store"
+      operations: []
+  - physical_node:
+      extends: "-"
+      description: null
+      properties:
+        - cpu_count:
+            type: "INTEGER"
+            required: false
+        - ram_GiB:
+            type: "INTEGER"
+            required: false
+        - storage_GiB:
+            type: "INTEGER"
+            required: false
+      operations: []
+  - operating_system:
+      extends: "-"
+      description: null
+      properties:
+        - name:
+            type: "STRING"
+            required: false
+        - version:
+            type: "STRING"
+            required: false
+        - os_family:
+            type: "STRING"
+            required: false
+      operations: []
+  - container_runtime:
+      extends: "-"
+      description: null
+      properties:
+        - name:
+            type: "STRING"
+            required: false
+        - version:
+            type: "STRING"
+            required: false
+      operations: []
+  - mongo-cart-mongodb-type:
+      extends: "-"
+      description: null
+      properties:
+        - mongodb:
+            type: "INTEGER"
+            required: true
+            default_value: 27017
+        - MONGODB_DISABLE_SYSTEM_LOG:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - ALLOW_EMPTY_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "yes"
+        - BITNAMI_DEBUG:
+            type: "STRING"
+            required: true
+            default_value: "false"
+        - MONGODB_PORT_NUMBER:
+            type: "STRING"
+            required: true
+            default_value: "27017"
+        - MONGODB_SYSTEM_LOG_VERBOSITY:
+            type: "STRING"
+            required: true
+            default_value: "0"
+        - MONGODB_ENABLE_IPV6:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - MONGODB_DISABLE_JAVASCRIPT:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - MONGODB_ENABLE_JOURNAL:
+            type: "STRING"
+            required: true
+            default_value: "yes"
+        - MONGODB_ENABLE_DIRECTORY_PER_DB:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - mongodb:
+            type: "STRING"
+            required: true
+            default_value: "27017:mongodb"
+      operations: []
+  - mongo-order-mongodb-type:
+      extends: "-"
+      description: null
+      properties:
+        - mongodb:
+            type: "INTEGER"
+            required: true
+            default_value: 27017
+        - MONGODB_DISABLE_SYSTEM_LOG:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - ALLOW_EMPTY_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "yes"
+        - BITNAMI_DEBUG:
+            type: "STRING"
+            required: true
+            default_value: "false"
+        - MONGODB_PORT_NUMBER:
+            type: "STRING"
+            required: true
+            default_value: "27017"
+        - MONGODB_SYSTEM_LOG_VERBOSITY:
+            type: "STRING"
+            required: true
+            default_value: "0"
+        - MONGODB_ENABLE_IPV6:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - MONGODB_DISABLE_JAVASCRIPT:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - MONGODB_ENABLE_JOURNAL:
+            type: "STRING"
+            required: true
+            default_value: "yes"
+        - MONGODB_ENABLE_DIRECTORY_PER_DB:
+            type: "STRING"
+            required: true
+            default_value: "no"
+        - mongodb:
+            type: "STRING"
+            required: true
+            default_value: "27017:mongodb"
+      operations: []
+  - kafka-controller-type:
+      extends: "-"
+      description: null
+      properties:
+        - client:
+            type: "INTEGER"
+            required: true
+            default_value: 9092
+        - controller:
+            type: "INTEGER"
+            required: true
+            default_value: 9093
+        - interbroker:
+            type: "INTEGER"
+            required: true
+            default_value: 9094
+        - KAFKA_INTER_BROKER_USER:
+            type: "STRING"
+            required: true
+            default_value: "inter_broker_user"
+        - KAFKA_CONTROLLER_USER:
+            type: "STRING"
+            required: true
+            default_value: "controller_user"
+        - BITNAMI_DEBUG:
+            type: "STRING"
+            required: true
+            default_value: "false"
+        - KAFKA_CLIENT_USERS:
+            type: "STRING"
+            required: true
+            default_value: "user1"
+        - KAFKA_KRAFT_BOOTSTRAP_SCRAM_USERS:
+            type: "STRING"
+            required: true
+            default_value: "true"
+        - KAFKA_HEAP_OPTS:
+            type: "STRING"
+            required: true
+            default_value: "-Xmx1024m -Xms1024m"
+        - tcp-client:
+            type: "STRING"
+            required: true
+            default_value: "9092:client"
+        - tcp-controller:
+            type: "STRING"
+            required: true
+            default_value: "9093:controller"
+        - tcp-interbroker:
+            type: "STRING"
+            required: true
+            default_value: "9094:interbroker"
+        - tcp-client:
+            type: "STRING"
+            required: true
+            default_value: "9092:client"
+      operations: []
+  - cdcservice-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - EVENTUATELOCAL_CDC_READER_NAME:
+            type: "STRING"
+            required: true
+            default_value: "PostgresPollingReader"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME:
+            type: "STRING"
+            required: true
+            default_value: "org.postgresql.Driver"
+        - SPRING_PROFILES_ACTIVE:
+            type: "STRING"
+            required: true
+            default_value: "EventuatePolling"
+        - SPRING_DATASOURCE_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - SPRING_DATASOURCE_TEST_ON_BORROW:
+            type: "STRING"
+            required: true
+            default_value: "true"
+        - SPRING_DATASOURCE_VALIDATION_QUERY:
+            type: "STRING"
+            required: true
+            default_value: "SELECT 1"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS:
+            type: "STRING"
+            required: true
+            default_value: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING:
+            type: "STRING"
+            required: true
+            default_value: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL:
+            type: "STRING"
+            required: true
+            default_value: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - EVENTUATE_OUTBOX_ID:
+            type: "STRING"
+            required: true
+            default_value: "1"
+        - JAVA_OPTS:
+            type: "STRING"
+            required: true
+            default_value: "-Xmx64m"
+        - SPRING_DATASOURCE_USERNAME:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - "8099":
+            type: "STRING"
+            required: true
+            default_value: "8099:8080"
+      operations: []
+  - uibackend-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - T2_ORCHESTRATOR_URL:
+            type: "STRING"
+            required: true
+            default_value: "http://orchestrator-cs/order/"
+        - T2_INVENTORY_URL:
+            type: "STRING"
+            required: true
+            default_value: "http://inventory-cs/inventory/"
+        - T2_RESERVATION_ENDPOINT:
+            type: "STRING"
+            required: true
+            default_value: "reservation"
+        - JAEGER_HOST:
+            type: "STRING"
+            required: true
+            default_value: "localhost #todo"
+        - T2_CART_URL:
+            type: "STRING"
+            required: true
+            default_value: "http://cart-cs/cart/"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - cart-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - T2_CART_TTL:
+            type: "STRING"
+            required: true
+            default_value: "0"
+        - JAEGER_HOST:
+            type: "STRING"
+            required: true
+            default_value: "localhost #todo"
+        - MONGO_HOST:
+            type: "STRING"
+            required: true
+            default_value: "mongo-cart-mongodb"
+        - T2_CART_TASKRATE:
+            type: "STRING"
+            required: true
+            default_value: "0"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - creditinstitute-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - http:
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - ui-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - T2_UIBACKEND_URL:
+            type: "STRING"
+            required: true
+            default_value: "http://uibackend-cs/"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - orchestrator-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - JAEGER_SERVICE_NAME:
+            type: "STRING"
+            required: true
+            default_value: "orchestrator"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME:
+            type: "STRING"
+            required: true
+            default_value: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS:
+            type: "STRING"
+            required: true
+            default_value: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING:
+            type: "STRING"
+            required: true
+            default_value: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL:
+            type: "STRING"
+            required: true
+            default_value: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - JAEGER_ENABLE:
+            type: "STRING"
+            required: true
+            default_value: "FALSE"
+        - SPRING_DATASOURCE_USERNAME:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - JAEGER_HOST:
+            type: "STRING"
+            required: true
+            default_value: "simplest-agent #todo"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - payment-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - T2_PAYMENT_PROVIDER_DUMMY_URL:
+            type: "STRING"
+            required: true
+            default_value: "http://creditinstitute-cs/pay"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME:
+            type: "STRING"
+            required: true
+            default_value: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - JAEGER_SERVICE_NAME:
+            type: "STRING"
+            required: true
+            default_value: "payment"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS:
+            type: "STRING"
+            required: true
+            default_value: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING:
+            type: "STRING"
+            required: true
+            default_value: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL:
+            type: "STRING"
+            required: true
+            default_value: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - JAEGER_ENABLE:
+            type: "STRING"
+            required: true
+            default_value: "FALSE"
+        - SPRING_DATASOURCE_USERNAME:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - JAEGER_HOST:
+            type: "STRING"
+            required: true
+            default_value: "simplest-agent #todo"
+        - T2_PAYMENT_PROVIDER_TIMEOUT:
+            type: "STRING"
+            required: true
+            default_value: "5"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - postgres-inventory-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 5432
+        - POSTGRES_DB:
+            type: "STRING"
+            required: true
+            default_value: "inventory"
+        - POSTGRES_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "inventory"
+        - POSTGRES_USER:
+            type: "STRING"
+            required: true
+            default_value: "inventory"
+        - "5432":
+            type: "STRING"
+            required: true
+            default_value: "5432:5432"
+      operations: []
+  - postgres-orchestrator-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 5432
+        - POSTGRES_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - POSTGRES_USER:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - USE_DB_ID:
+            type: "STRING"
+            required: true
+            default_value: "true"
+        - "5432":
+            type: "STRING"
+            required: true
+            default_value: "5432:5432"
+      operations: []
+  - order-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - MONGO_HOST:
+            type: "STRING"
+            required: true
+            default_value: "mongo-order-mongodb"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME:
+            type: "STRING"
+            required: true
+            default_value: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - JAEGER_SERVICE_NAME:
+            type: "STRING"
+            required: true
+            default_value: "order"
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS:
+            type: "STRING"
+            required: true
+            default_value: "kafka:9092"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING:
+            type: "STRING"
+            required: true
+            default_value: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL:
+            type: "STRING"
+            required: true
+            default_value: "jdbc:postgresql://postgres-orchestrator/eventuate"
+        - JAEGER_ENABLE:
+            type: "STRING"
+            required: true
+            default_value: "FALSE"
+        - SPRING_DATASOURCE_USERNAME:
+            type: "STRING"
+            required: true
+            default_value: "eventuate"
+        - JAEGER_HOST:
+            type: "STRING"
+            required: true
+            default_value: "simplest-agent #todo"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+  - inventory-type:
+      extends: "-"
+      description: null
+      properties:
+        - container_port:
+            type: "INTEGER"
+            required: true
+            default_value: 8080
+        - EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS:
+            type: "STRING"
+            required: true
+            default_value: "kafka:9092"
+        - INVENTORY_SIZE:
+            type: "STRING"
+            required: true
+            default_value: "25"
+        - JAEGER_HOST:
+            type: "STRING"
+            required: true
+            default_value: "simplest-agent #todo"
+        - JAEGER_SERVICE_NAME:
+            type: "STRING"
+            required: true
+            default_value: "inventory"
+        - SPRING_PROFILE_ACTIVE:
+            type: "STRING"
+            required: true
+            default_value: "saga"
+        - SPRING_DATASOURCE_DRIVER_CLASS_NAME:
+            type: "STRING"
+            required: true
+            default_value: "org.postgresql.Driver"
+        - SPRING_DATASOURCE_PASSWORD:
+            type: "STRING"
+            required: true
+            default_value: "inventory"
+        - EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING:
+            type: "STRING"
+            required: true
+            default_value: "kafka-zookeeper:2181"
+        - SPRING_DATASOURCE_URL:
+            type: "STRING"
+            required: true
+            default_value: "jdbc:postgresql://postgres-inventory:5432/inventory"
+        - JAEGER_ENABLE:
+            type: "STRING"
+            required: true
+            default_value: "FALSE"
+        - T2_INVENTORY_TTL:
+            type: "STRING"
+            required: true
+            default_value: "0"
+        - T2_INVENTORY_TASKRATE:
+            type: "STRING"
+            required: true
+            default_value: "0"
+        - SPRING_DATASOURCE_USERNAME:
+            type: "STRING"
+            required: true
+            default_value: "inventory"
+        - "80":
+            type: "STRING"
+            required: true
+            default_value: "80:8080"
+      operations: []
+relation_types:
+  - DependsOn:
+      extends: "-"
+      description: "generic relation type"
+      properties: []
+      operations: []
+  - HostedOn:
+      extends: "DependsOn"
+      description: "hosted on relation"
+      properties: []
+      operations: []
+  - ConnectsTo:
+      extends: "DependsOn"
+      description: "connects to relation"
+      properties: []
+      operations: []
